@@ -34,7 +34,11 @@ let _getAppTUAString = function () {
     return tuaStr
 };
 
-
+/**
+ * 生成签名
+ * @param serviceName
+ * @param search
+ */
 function sign(serviceName, search) {
     let requestSingCode = '748F9987483EC37852EF1B3E95A8BCD2';
     return md5.hex_md5(serviceName + search + requestSingCode)
@@ -47,16 +51,17 @@ const client = create({
     baseURL: api.production,
     timeout: 30000
 });
-
+//请求头设置
 client.setHeader('tua', _getAppTUAString());
 client.setHeader('user-agent', DeviceInfo.getUserAgent());
 client.setHeader('credentials', 'include');
 
-if (__DEV__) {
 
+//请求 响应 log打印
+if (__DEV__) {
     client.addMonitor(response => {
         const {url} = response.config;
-        console.log(TAG + url, response)
+        console.log('RES_HTTP: ' + url, response)
     })
 
     client.addRequestTransform(request => {
@@ -70,6 +75,12 @@ function fillPath(path, params) {
     })
 }
 
+/**
+ * URL参数处理
+ * @param path
+ * @param params
+ * @returns {*}
+ */
 function search(path, params) {
 
     let url = fillPath(path, params)
@@ -84,6 +95,12 @@ function search(path, params) {
     return url
 }
 
+/**
+ * 为获取sign,URL参数处理
+ * @param query
+ * @returns {string}
+ * @private
+ */
 function _stringifySorted(query) {
     let keys = Object.keys(query).sort()
     let pairs = keys.reduce(function (collect, key) {
@@ -92,6 +109,43 @@ function _stringifySorted(query) {
         return collect.concat(decodeURIComponent(Query.stringify(p)))
     }, [])
     return pairs.join('&')
+}
+
+/**
+ * 响应结果处理
+ * @param res
+ * @param resolve
+ * @param reject
+ */
+function handle(res, resolve, reject) {
+    const {ok, status, data} = res;
+    if (ok && status === 200 && data.code === 0) {
+        resolve && resolve(data.result)
+    } else {
+        reject && reject(data.msg);
+        errReject(res)
+    }
+}
+
+/**
+ * 转化成已签名的URL
+ * @param url
+ * @param body
+ * @returns {string|*}
+ */
+function convert_url(url, body) {
+    let timestamp = Math.round(new Date().getTime())
+    let params = {
+        method: body.method,
+        subtime: timestamp,
+        version: global.VERSION
+    };
+    let str_query = _stringifySorted(params);
+    console.log(str_query)
+    params.sign = sign(url, str_query);
+    let pathname = search(url, params)
+    console.log(pathname)
+    return pathname;
 }
 
 
@@ -114,32 +168,10 @@ export function post(url, body, resolve, reject) {
     })
 }
 
-function handle(res, resolve, reject) {
-    const {ok, status, data} = res;
-    if (ok && status === 200 && data.code === 0) {
-        resolve && resolve(data)
-    } else {
-        reject && reject(data.msg);
-        errReject(res)
-    }
-}
-
-function convert_url(url, body) {
-    let timestamp = Math.round(new Date().getTime())
-    let params = {
-        method: body.method,
-        subtime: timestamp,
-        version: global.VERSION
-    };
-    let str_query = _stringifySorted(params);
-    console.log(str_query)
-    params.sign = sign(url, str_query);
-    let pathname = search(url, params)
-    console.log(pathname)
-    return pathname;
-}
-
-
+/**
+ * 错误处理
+ * @param err
+ */
 function errReject(err) {
     console.log(err)
 }

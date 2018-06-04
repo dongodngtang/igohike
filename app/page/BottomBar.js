@@ -13,7 +13,6 @@ import {Styles, Metrics} from '../config/Theme'
 
 class BottomBar extends PureComponent {
     render() {
-        console.log(this.props)
         const {jumpToIndex} = this.props;
         const {routes, index} = this.props.navigationState;
         return (

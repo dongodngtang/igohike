@@ -31,7 +31,14 @@ class PullRefresh extends Component {
                     {arrys.map((item, key) => {
                         return <Button key={key}
                                        onPress={() => {
-                                           app_home()
+                                           let body = {
+                                               method: 'appHome'
+                                           }
+                                           app_home(body, data => {
+                                               console.log(data)
+                                           }, err => {
+                                               console.log(err)
+                                           })
                                        }}>
                             <Text>按钮{item}</Text>
                         </Button>

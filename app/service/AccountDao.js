@@ -10,9 +10,7 @@
 import {post, get} from '../config/fetch';
 import api from '../config/api';
 
-export function app_home() {
-    let body = {
-        method: 'appHome'
-    };
-    post(api.app_api_do, body)
+export function app_home(body, resolve, reject) {
+
+    post(api.app_api_do, body, resolve, reject)
 }
