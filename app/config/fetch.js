@@ -111,21 +111,7 @@ function _stringifySorted(query) {
     return pairs.join('&')
 }
 
-/**
- * 响应结果处理
- * @param res
- * @param resolve
- * @param reject
- */
-function handle(res, resolve, reject) {
-    const {ok, status, data} = res;
-    if (ok && status === 200 && data.code === 0) {
-        resolve && resolve(data.result)
-    } else {
-        reject && reject(data.msg);
-        errReject(res)
-    }
-}
+
 
 /**
  * 转化成已签名的URL
@@ -166,6 +152,23 @@ export function post(url, body, resolve, reject) {
     }).catch(err => {
         errReject(err)
     })
+}
+
+
+/**
+ * 响应结果处理
+ * @param res
+ * @param resolve
+ * @param reject
+ */
+function handle(res, resolve, reject) {
+    const {ok, status, data} = res;
+    if (ok && status === 200 && data.code === 0) {
+        resolve && resolve(data.result)
+    } else {
+        reject && reject(data.msg);
+        errReject(res)
+    }
 }
 
 /**

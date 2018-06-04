@@ -14,6 +14,7 @@ import {app_home} from '../service/AccountDao'
 
 class PullRefresh extends Component {
     render() {
+
         const arrys = [1, 2, 3, 4, 5, 6, 7, 8, 9];
         return (
             <Base>

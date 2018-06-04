@@ -12,11 +12,3 @@ export default {
     production: 'https://mobile.touna.cn/',
     app_api_do: 'appApi.do'
 }
-
-function user_id() {
-    return loginUser.user_id
-}
-
-function profile() {
-    return `account/users/${user_id()}/profile`
-}
