@@ -10,5 +10,5 @@
 
 export default {
     production: 'https://mobile.touna.cn/',
-    app_api_do: 'appApi.do'
+    app_api_do: 'appApi.do',//接口作用
 }
